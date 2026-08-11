@@ -88,9 +88,9 @@ function dedupeItems(items) {
   return { items: result, duplicatesRemoved }
 }
 
-// يبني ملف إكسل: جدول منفصل لكل مورد يفصله سطر فارغ، مرتب حسب المورد ثم البيان ثم الرصيد
-export function downloadSuppliersExport(items, { branchName = '', dateFrom = '', dateTo = '' } = {}) {
-  const sorted = sortItems(items)
+// يبني ملف إكسل: جدول منفصل لكل مجموعة (مورد أو بيان حسب groupBy) يفصله سطر فارغ
+export function downloadSuppliersExport(items, { branchName = '', dateFrom = '', dateTo = '', groupBy = 'supplier' } = {}) {
+  const sorted = sortItems(items, groupBy)
   const headers = ['المورد', 'الاسم', 'البيان', 'موديل', 'الرصيد', 'السعر']
   const aoa = []
   const merges = []
@@ -104,19 +104,23 @@ export function downloadSuppliersExport(items, { branchName = '', dateFrom = '',
     aoa.push([])
   }
 
-  const bySupplier = new Map()
+  const groupKey = (it) => (groupBy === 'category' ? it.category : it.supplier_code)
+  const groupTitle = (groupItems) =>
+    groupBy === 'category' ? groupItems[0].category : `${groupItems[0].supplier_code} - ${groupItems[0].supplier_name}`
+
+  const groups = new Map()
   for (const it of sorted) {
-    if (!bySupplier.has(it.supplier_code)) bySupplier.set(it.supplier_code, [])
-    bySupplier.get(it.supplier_code).push(it)
+    const key = groupKey(it)
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key).push(it)
   }
 
-  for (const [supplierCode, supplierItems] of bySupplier) {
-    const supplierName = supplierItems[0].supplier_name
+  for (const groupItems of groups.values()) {
     const titleRowIndex = aoa.length
-    aoa.push([`${supplierCode} - ${supplierName}`])
+    aoa.push([groupTitle(groupItems)])
     merges.push({ s: { r: titleRowIndex, c: 0 }, e: { r: titleRowIndex, c: 5 } })
     aoa.push(headers)
-    for (const it of supplierItems) {
+    for (const it of groupItems) {
       aoa.push([it.supplier_code, it.supplier_name, it.category, it.model, it.balance, it.price])
     }
     aoa.push([])

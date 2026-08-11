@@ -90,8 +90,8 @@ export const ItemsAPI = {
     return meta
   },
 
-  // يولّد ملف إكسل مقسّم حسب المورد ويبدأ تنزيله مباشرة من المتصفح
-  export({ branchName = '', dateFrom = '', dateTo = '' } = {}) {
-    downloadSuppliersExport(loadItems(), { branchName, dateFrom, dateTo })
+  // يولّد ملف إكسل مقسّم حسب المورد أو البيان ويبدأ تنزيله مباشرة من المتصفح
+  export({ branchName = '', dateFrom = '', dateTo = '', groupBy = 'supplier' } = {}) {
+    downloadSuppliersExport(loadItems(), { branchName, dateFrom, dateTo, groupBy })
   },
 }

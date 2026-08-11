@@ -4,6 +4,7 @@ export default function PrintModal({ open, defaultBranch, onClose, onConfirm, mo
   const [branchName, setBranchName] = useState(defaultBranch || '')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
+  const [groupBy, setGroupBy] = useState('supplier')
 
   if (!open) return null
 
@@ -28,6 +29,33 @@ export default function PrintModal({ open, defaultBranch, onClose, onConfirm, mo
             <span className="block text-xs font-semibold text-slate-500 mb-1">اسم الفرع</span>
             <input className="input" value={branchName} onChange={(e) => setBranchName(e.target.value)} placeholder="مثال: فرع الرياض" />
           </label>
+          <div className="block">
+            <span className="block text-xs font-semibold text-slate-500 mb-1">الترتيب والتجميع</span>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setGroupBy('supplier')}
+                className={`rounded-lg px-3 py-2 text-sm font-semibold border transition ${
+                  groupBy === 'supplier'
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                حسب المورد
+              </button>
+              <button
+                type="button"
+                onClick={() => setGroupBy('category')}
+                className={`rounded-lg px-3 py-2 text-sm font-semibold border transition ${
+                  groupBy === 'category'
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                حسب البيان
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
               <span className="block text-xs font-semibold text-slate-500 mb-1">من تاريخ</span>
@@ -57,7 +85,7 @@ export default function PrintModal({ open, defaultBranch, onClose, onConfirm, mo
             إلغاء
           </button>
           <button
-            onClick={() => onConfirm({ branchName, dateFrom, dateTo })}
+            onClick={() => onConfirm({ branchName, dateFrom, dateTo, groupBy })}
             className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-600/30"
           >
             {cta}

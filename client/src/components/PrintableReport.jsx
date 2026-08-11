@@ -1,14 +1,19 @@
-function groupBySupplier(items) {
+import { sortItems } from '../sort.js'
+
+function groupItems(items, groupBy) {
   const map = new Map()
+  const keyOf = (it) => (groupBy === 'category' ? it.category : it.supplier_code)
   for (const it of items) {
-    if (!map.has(it.supplier_code)) map.set(it.supplier_code, [])
-    map.get(it.supplier_code).push(it)
+    const key = keyOf(it)
+    if (!map.has(key)) map.set(key, [])
+    map.get(key).push(it)
   }
   return [...map.entries()]
 }
 
-export default function PrintableReport({ items, branchName, dateFrom, dateTo }) {
-  const groups = groupBySupplier(items)
+export default function PrintableReport({ items, branchName, dateFrom, dateTo, groupBy = 'supplier' }) {
+  const sorted = sortItems(items, groupBy)
+  const groups = groupItems(sorted, groupBy)
 
   return (
     <div className="hidden print:block p-6 bg-white text-black" dir="rtl">
@@ -24,15 +29,22 @@ export default function PrintableReport({ items, branchName, dateFrom, dateTo })
         </div>
       </div>
 
-      {groups.map(([supplierCode, rows], idx) => (
-        <div key={supplierCode} className={idx > 0 ? 'mt-3 pt-3 border-t border-dashed border-black' : ''}>
+      {groups.map(([key, rows], idx) => (
+        <div key={key} className={idx > 0 ? 'mt-3 pt-3 border-t border-dashed border-black' : ''}>
           <div className="text-[13px] font-bold mb-1">
-            {supplierCode} - {rows[0].supplier_name}
+            {groupBy === 'category' ? rows[0].category : `${rows[0].supplier_code} - ${rows[0].supplier_name}`}
           </div>
           <table className="w-full border-collapse text-[11px]">
             <thead>
               <tr className="font-bold">
-                <th className="border-2 border-black px-2 py-1">البيان</th>
+                {groupBy === 'category' ? (
+                  <>
+                    <th className="border-2 border-black px-2 py-1">المورد</th>
+                    <th className="border-2 border-black px-2 py-1">الاسم</th>
+                  </>
+                ) : (
+                  <th className="border-2 border-black px-2 py-1">البيان</th>
+                )}
                 <th className="border-2 border-black px-2 py-1">موديل</th>
                 <th className="border-2 border-black px-2 py-1">الرصيد</th>
                 <th className="border-2 border-black px-2 py-1">السعر</th>
@@ -41,7 +53,14 @@ export default function PrintableReport({ items, branchName, dateFrom, dateTo })
             <tbody>
               {rows.map((r) => (
                 <tr key={r.id}>
-                  <td className="border border-black px-2 py-0.5">{r.category}</td>
+                  {groupBy === 'category' ? (
+                    <>
+                      <td className="border border-black px-2 py-0.5 text-center">{r.supplier_code}</td>
+                      <td className="border border-black px-2 py-0.5">{r.supplier_name}</td>
+                    </>
+                  ) : (
+                    <td className="border border-black px-2 py-0.5">{r.category}</td>
+                  )}
                   <td className="border border-black px-2 py-0.5 text-center">{r.model}</td>
                   <td className="border border-black px-2 py-0.5 text-center">{r.balance}</td>
                   <td className="border border-black px-2 py-0.5 text-center">{r.price}</td>

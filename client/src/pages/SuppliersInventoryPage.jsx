@@ -128,16 +128,16 @@ export default function SuppliersInventoryPage() {
     showToast('تم حذف جميع البيانات')
   }
 
-  const handleExportConfirm = async ({ branchName, dateFrom, dateTo }) => {
+  const handleExportConfirm = async ({ branchName, dateFrom, dateTo, groupBy }) => {
     await ItemsAPI.setBranch(branchName)
-    ItemsAPI.export({ branchName, dateFrom, dateTo })
+    ItemsAPI.export({ branchName, dateFrom, dateTo, groupBy })
     setPrintModal({ open: false, mode: 'print' })
     showToast('تم تصدير الملف')
   }
 
-  const handlePrintConfirm = async ({ branchName, dateFrom, dateTo }) => {
+  const handlePrintConfirm = async ({ branchName, dateFrom, dateTo, groupBy }) => {
     await ItemsAPI.setBranch(branchName)
-    setPrintState({ branchName, dateFrom, dateTo })
+    setPrintState({ branchName, dateFrom, dateTo, groupBy })
     setPrintModal({ open: false, mode: 'print' })
     setTimeout(() => window.print(), 100)
   }
