@@ -8,8 +8,10 @@ export default function PrintModal({ open, defaultBranch, onClose, onConfirm, mo
 
   if (!open) return null
 
-  const title = mode === 'export' ? 'تصدير التقرير' : 'طباعة التقرير'
-  const cta = mode === 'export' ? 'تصدير' : 'طباعة'
+  const titles = { export: 'تصدير التقرير', pdf: 'تصدير PDF', print: 'طباعة التقرير' }
+  const ctas = { export: 'تصدير', pdf: 'تصدير PDF', print: 'طباعة' }
+  const title = titles[mode] ?? titles.print
+  const cta = ctas[mode] ?? ctas.print
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
@@ -78,6 +80,11 @@ export default function PrintModal({ open, defaultBranch, onClose, onConfirm, mo
               />
             </label>
           </div>
+          {mode === 'pdf' && (
+            <p className="text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2">
+              سيفتح مربع طباعة المتصفح — اختر «حفظ كـ PDF» من قائمة الطابعة لتنزيل الملف.
+            </p>
+          )}
         </div>
 
         <div className="px-6 py-4 bg-slate-50 flex items-center justify-end gap-2">

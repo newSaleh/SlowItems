@@ -167,6 +167,9 @@ export default function SuppliersInventoryPage() {
           <button onClick={() => setPrintModal({ open: true, mode: 'print' })} className="btn-secondary">
             🖨️ طباعة
           </button>
+          <button onClick={() => setPrintModal({ open: true, mode: 'pdf' })} className="btn-secondary">
+            📄 تصدير PDF
+          </button>
           <button
             onClick={handleClearAll}
             disabled={items.length === 0}
