@@ -78,10 +78,10 @@ export const ItemsAPI = {
     } catch (err) {
       throw apiError(err.message || 'تعذر قراءة ملف الإكسل')
     }
-    const items = parsed.map((it) => ({ id: nextId(), ...it, created_at: nowISO(), updated_at: nowISO() }))
+    const items = parsed.items.map((it) => ({ id: nextId(), ...it, created_at: nowISO(), updated_at: nowISO() }))
     saveItems(items)
     saveMeta({ ...loadMeta(), importedAt: nowISO(), sourceFile: file.name })
-    return { imported: items.length }
+    return { imported: items.length, duplicatesRemoved: parsed.duplicatesRemoved }
   },
 
   async setBranch(branchName) {

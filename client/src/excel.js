@@ -65,7 +65,27 @@ export async function parseSuppliersFile(file) {
   }
 
   if (!items.length) throw new Error('لم يتم العثور على أي بيانات صالحة في الملف')
-  return items
+
+  const { items: deduped, duplicatesRemoved } = dedupeItems(items)
+  if (!deduped.length) throw new Error('لم يتم العثور على أي بيانات صالحة في الملف')
+  return { items: deduped, duplicatesRemoved }
+}
+
+// يحذف الأسطر المكررة تمامًا (نفس المورد والبيان والموديل والرصيد والسعر)، ويبقي على أول ظهور فقط
+function dedupeItems(items) {
+  const seen = new Set()
+  const result = []
+  let duplicatesRemoved = 0
+  for (const it of items) {
+    const key = [it.supplier_code, it.category, it.model, it.balance, it.price].join(' ')
+    if (seen.has(key)) {
+      duplicatesRemoved++
+      continue
+    }
+    seen.add(key)
+    result.push(it)
+  }
+  return { items: result, duplicatesRemoved }
 }
 
 // يبني ملف إكسل: جدول منفصل لكل مورد يفصله سطر فارغ، مرتب حسب المورد ثم البيان ثم الرصيد

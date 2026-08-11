@@ -78,7 +78,11 @@ export default function SuppliersInventoryPage() {
     try {
       const res = await ItemsAPI.import(file)
       await load()
-      showToast(`تم استيراد ${fmtNumber(res.imported)} صنف بنجاح`)
+      showToast(
+        res.duplicatesRemoved > 0
+          ? `تم استيراد ${fmtNumber(res.imported)} صنف (حُذف ${fmtNumber(res.duplicatesRemoved)} سطر مكرر)`
+          : `تم استيراد ${fmtNumber(res.imported)} صنف بنجاح`
+      )
     } catch (err) {
       setError(err?.response?.data?.error || 'تعذر استيراد الملف')
     } finally {
