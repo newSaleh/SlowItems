@@ -46,7 +46,12 @@ body {
 }
 
 @media print {
-  body {
+  * {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  html, body, #root {
     background: #fff !important;
   }
   .no-print {
