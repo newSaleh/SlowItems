@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx'
 import { sortItems } from './sort.js'
+import { DEFAULT_REPORT_TITLE } from './constants.js'
 
 const HEADER_MAP = {
   'رمز المورد': 'supplier_code',
@@ -89,20 +90,28 @@ function dedupeItems(items) {
 }
 
 // يبني ملف إكسل: جدول منفصل لكل مجموعة (مورد أو بيان حسب groupBy) يفصله سطر فارغ
-export function downloadSuppliersExport(items, { branchName = '', dateFrom = '', dateTo = '', groupBy = 'supplier' } = {}) {
+export function downloadSuppliersExport(
+  items,
+  { title = '', branchName = '', dateFrom = '', dateTo = '', groupBy = 'supplier' } = {}
+) {
   const sorted = sortItems(items, groupBy)
   const headers = ['المورد', 'الاسم', 'البيان', 'موديل', 'الرصيد', 'السعر']
   const aoa = []
   const merges = []
 
+  const titleRowIdx = aoa.length
+  aoa.push([title || DEFAULT_REPORT_TITLE])
+  merges.push({ s: { r: titleRowIdx, c: 0 }, e: { r: titleRowIdx, c: 5 } })
+
   if (branchName || dateFrom || dateTo) {
     const parts = []
     if (branchName) parts.push(`الفرع: ${branchName}`)
     if (dateFrom || dateTo) parts.push(`الفترة: من ${dateFrom || '—'} إلى ${dateTo || '—'}`)
+    const infoRowIdx = aoa.length
     aoa.push([parts.join('      ')])
-    merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } })
-    aoa.push([])
+    merges.push({ s: { r: infoRowIdx, c: 0 }, e: { r: infoRowIdx, c: 5 } })
   }
+  aoa.push([])
 
   const groupKey = (it) => (groupBy === 'category' ? it.category : it.supplier_code)
   const groupTitle = (groupItems) =>

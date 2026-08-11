@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { DEFAULT_REPORT_TITLE } from '../constants.js'
 
 export default function PrintModal({ open, defaultBranch, onClose, onConfirm, mode }) {
+  const [reportTitle, setReportTitle] = useState('')
   const [branchName, setBranchName] = useState(defaultBranch || '')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -27,6 +29,15 @@ export default function PrintModal({ open, defaultBranch, onClose, onConfirm, mo
         </div>
 
         <div className="px-6 py-5 space-y-4">
+          <label className="block">
+            <span className="block text-xs font-semibold text-slate-500 mb-1">العنوان</span>
+            <input
+              className="input"
+              value={reportTitle}
+              onChange={(e) => setReportTitle(e.target.value)}
+              placeholder={DEFAULT_REPORT_TITLE}
+            />
+          </label>
           <label className="block">
             <span className="block text-xs font-semibold text-slate-500 mb-1">اسم الفرع</span>
             <input className="input" value={branchName} onChange={(e) => setBranchName(e.target.value)} placeholder="مثال: فرع الرياض" />
@@ -92,7 +103,7 @@ export default function PrintModal({ open, defaultBranch, onClose, onConfirm, mo
             إلغاء
           </button>
           <button
-            onClick={() => onConfirm({ branchName, dateFrom, dateTo, groupBy })}
+            onClick={() => onConfirm({ title: reportTitle.trim(), branchName, dateFrom, dateTo, groupBy })}
             className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-600/30"
           >
             {cta}

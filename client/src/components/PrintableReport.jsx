@@ -1,4 +1,5 @@
 import { sortItems } from '../sort.js'
+import { DEFAULT_REPORT_TITLE } from '../constants.js'
 
 function groupItems(items, groupBy) {
   const map = new Map()
@@ -11,14 +12,14 @@ function groupItems(items, groupBy) {
   return [...map.entries()]
 }
 
-export default function PrintableReport({ items, branchName, dateFrom, dateTo, groupBy = 'supplier' }) {
+export default function PrintableReport({ items, title, branchName, dateFrom, dateTo, groupBy = 'supplier' }) {
   const sorted = sortItems(items, groupBy)
   const groups = groupItems(sorted, groupBy)
 
   return (
     <div className="hidden print:block p-10 bg-white text-black" dir="rtl">
       <div className="mb-4 border-b-2 border-black pb-3">
-        <h1 className="text-xl font-bold">مخزون البضاعة الراكدة</h1>
+        <h1 className="text-xl font-bold">{title || DEFAULT_REPORT_TITLE}</h1>
         <div className="flex gap-8 text-sm mt-1">
           {branchName && <span>الفرع: <strong>{branchName}</strong></span>}
           {(dateFrom || dateTo) && (

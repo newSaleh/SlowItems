@@ -91,7 +91,7 @@ export const ItemsAPI = {
   },
 
   // يولّد ملف إكسل مقسّم حسب المورد أو البيان ويبدأ تنزيله مباشرة من المتصفح
-  export({ branchName = '', dateFrom = '', dateTo = '', groupBy = 'supplier' } = {}) {
-    downloadSuppliersExport(loadItems(), { branchName, dateFrom, dateTo, groupBy })
+  export({ title = '', branchName = '', dateFrom = '', dateTo = '', groupBy = 'supplier' } = {}) {
+    downloadSuppliersExport(loadItems(), { title, branchName, dateFrom, dateTo, groupBy })
   },
 }
