@@ -32,8 +32,6 @@ export default function PrintableReport({ items, branchName, dateFrom, dateTo })
           <table className="w-full border-collapse text-[11px]">
             <thead>
               <tr className="bg-slate-800 text-white">
-                <th className="border border-slate-400 px-2 py-1">المورد</th>
-                <th className="border border-slate-400 px-2 py-1">الاسم</th>
                 <th className="border border-slate-400 px-2 py-1">البيان</th>
                 <th className="border border-slate-400 px-2 py-1">موديل</th>
                 <th className="border border-slate-400 px-2 py-1">الرصيد</th>
@@ -43,8 +41,6 @@ export default function PrintableReport({ items, branchName, dateFrom, dateTo })
             <tbody>
               {rows.map((r) => (
                 <tr key={r.id}>
-                  <td className="border border-slate-300 px-2 py-0.5 text-center">{r.supplier_code}</td>
-                  <td className="border border-slate-300 px-2 py-0.5">{r.supplier_name}</td>
                   <td className="border border-slate-300 px-2 py-0.5">{r.category}</td>
                   <td className="border border-slate-300 px-2 py-0.5 text-center">{r.model}</td>
                   <td className="border border-slate-300 px-2 py-0.5 text-center">{r.balance}</td>

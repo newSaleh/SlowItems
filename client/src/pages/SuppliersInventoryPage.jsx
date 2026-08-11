@@ -5,7 +5,7 @@ import PrintModal from '../components/PrintModal.jsx'
 import PrintableReport from '../components/PrintableReport.jsx'
 
 function fmtNumber(n) {
-  return new Intl.NumberFormat('ar-EG').format(n)
+  return new Intl.NumberFormat('ar-EG-u-nu-latn').format(n)
 }
 
 export default function SuppliersInventoryPage() {
@@ -134,7 +134,7 @@ export default function SuppliersInventoryPage() {
           <h2 className="text-2xl font-extrabold text-slate-800">موردو المخزون</h2>
           <p className="text-sm text-slate-500 mt-1">
             {meta.sourceFile ? (
-              <>آخر استيراد: <span className="font-medium">{meta.sourceFile}</span> — {meta.importedAt ? new Date(meta.importedAt).toLocaleString('ar-EG') : ''}</>
+              <>آخر استيراد: <span className="font-medium">{meta.sourceFile}</span> — {meta.importedAt ? new Date(meta.importedAt).toLocaleString('ar-EG-u-nu-latn') : ''}</>
             ) : (
               'لم يتم استيراد أي بيانات بعد'
             )}
