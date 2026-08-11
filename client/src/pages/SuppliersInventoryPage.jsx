@@ -115,9 +115,9 @@ export default function SuppliersInventoryPage() {
 
   const handleExportConfirm = async ({ branchName, dateFrom, dateTo }) => {
     await ItemsAPI.setBranch(branchName)
-    const url = ItemsAPI.exportUrl({ branchName, dateFrom, dateTo })
-    window.location.href = url
+    ItemsAPI.export({ branchName, dateFrom, dateTo })
     setPrintModal({ open: false, mode: 'print' })
+    showToast('تم تصدير الملف')
   }
 
   const handlePrintConfirm = async ({ branchName, dateFrom, dateTo }) => {
