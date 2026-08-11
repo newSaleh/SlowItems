@@ -113,6 +113,17 @@ export default function SuppliersInventoryPage() {
     showToast('تم الحذف')
   }
 
+  const handleClearAll = async () => {
+    if (items.length === 0) return
+    const confirmed = confirm(
+      `هل أنت متأكد من حذف جميع البيانات؟\nسيتم حذف ${fmtNumber(items.length)} صنف نهائيًا من هذا الجهاز، ولا يمكن التراجع عن هذا الإجراء.`
+    )
+    if (!confirmed) return
+    await ItemsAPI.clearAll()
+    await load()
+    showToast('تم حذف جميع البيانات')
+  }
+
   const handleExportConfirm = async ({ branchName, dateFrom, dateTo }) => {
     await ItemsAPI.setBranch(branchName)
     ItemsAPI.export({ branchName, dateFrom, dateTo })
@@ -151,6 +162,13 @@ export default function SuppliersInventoryPage() {
           </button>
           <button onClick={() => setPrintModal({ open: true, mode: 'print' })} className="btn-secondary">
             🖨️ طباعة
+          </button>
+          <button
+            onClick={handleClearAll}
+            disabled={items.length === 0}
+            className="px-4 py-2 rounded-xl text-sm font-semibold text-rose-600 bg-rose-50 ring-1 ring-rose-200 hover:bg-rose-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            🗑️ حذف الكل
           </button>
           <button onClick={openAddForm} className="btn-primary">
             + إضافة صنف

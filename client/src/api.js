@@ -64,6 +64,12 @@ export const ItemsAPI = {
     saveItems(loadItems().filter((i) => i.id !== id))
   },
 
+  // يحذف جميع الأصناف ويعيد بيانات الفرع (اسمه وتاريخ آخر استيراد) إلى حالتها الافتراضية
+  async clearAll() {
+    saveItems([])
+    saveMeta({ branchName: '', importedAt: null, sourceFile: null })
+  },
+
   // يستبدل بيانات الفرع الحالي بالكامل بمحتوى الملف المرفوع (كل فرع يُستورد له ملفه الخاص بشكل منفصل)
   async import(file) {
     let parsed
