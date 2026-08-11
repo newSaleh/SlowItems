@@ -45,6 +45,11 @@ body {
   background-color: #94a3b8;
 }
 
+/* هامش صفر يمنع بعض المتصفحات (مثل Safari) من إضافة ترويسة/تذييل تلقائي (الرابط والوقت) في الطباعة */
+@page {
+  margin: 0;
+}
+
 @media print {
   * {
     background: transparent !important;
