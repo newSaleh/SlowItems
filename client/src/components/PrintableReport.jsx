@@ -18,7 +18,7 @@ export default function PrintableReport({ items, branchName, dateFrom, dateTo, g
   return (
     <div className="hidden print:block p-6 bg-white text-black" dir="rtl">
       <div className="mb-4 border-b-2 border-black pb-3">
-        <h1 className="text-xl font-extrabold">مخزون البضاعة الراكدة</h1>
+        <h1 className="text-xl font-bold">مخزون البضاعة الراكدة</h1>
         <div className="flex gap-8 text-sm mt-1">
           {branchName && <span>الفرع: <strong>{branchName}</strong></span>}
           {(dateFrom || dateTo) && (
