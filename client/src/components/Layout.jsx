@@ -17,7 +17,7 @@ export default function Layout() {
     <div className="min-h-screen flex bg-slate-100 text-slate-800" dir="rtl">
       <aside className="no-print w-64 shrink-0 bg-gradient-to-b from-indigo-950 via-indigo-900 to-slate-900 text-white flex flex-col">
         <div className="px-6 py-6 border-b border-white/10">
-          <h1 className="text-lg font-extrabold tracking-tight">نظام إدارة المخزون</h1>
+          <h1 className="text-lg font-extrabold tracking-tight">البضاعة الراكدة</h1>
           <p className="text-xs text-indigo-200/70 mt-1">إدارة أصناف الموردين</p>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1">

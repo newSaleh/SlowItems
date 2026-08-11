@@ -131,7 +131,7 @@ export default function SuppliersInventoryPage() {
     <div className="p-6 lg:p-8 max-w-[1400px] mx-auto">
       <header className="no-print flex flex-wrap items-end justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-800">موردو المخزون</h2>
+          <h2 className="text-2xl font-extrabold text-slate-800">البضاعة الراكدة</h2>
           <p className="text-sm text-slate-500 mt-1">
             {meta.sourceFile ? (
               <>آخر استيراد: <span className="font-medium">{meta.sourceFile}</span> — {meta.importedAt ? new Date(meta.importedAt).toLocaleString('ar-EG-u-nu-latn') : ''}</>
