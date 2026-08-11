@@ -31,11 +31,23 @@ export default function PrintModal({ open, defaultBranch, onClose, onConfirm, mo
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
               <span className="block text-xs font-semibold text-slate-500 mb-1">من تاريخ</span>
-              <input type="date" className="input" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+              <input
+                type="date"
+                className="input cursor-pointer"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                onClick={(e) => e.currentTarget.showPicker?.()}
+              />
             </label>
             <label className="block">
               <span className="block text-xs font-semibold text-slate-500 mb-1">إلى تاريخ</span>
-              <input type="date" className="input" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+              <input
+                type="date"
+                className="input cursor-pointer"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                onClick={(e) => e.currentTarget.showPicker?.()}
+              />
             </label>
           </div>
         </div>

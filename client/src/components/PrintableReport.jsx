@@ -11,8 +11,8 @@ export default function PrintableReport({ items, branchName, dateFrom, dateTo })
   const groups = groupBySupplier(items)
 
   return (
-    <div className="hidden print:block p-6" dir="rtl">
-      <div className="mb-4 border-b-2 border-slate-800 pb-3">
+    <div className="hidden print:block p-6 bg-white text-black" dir="rtl">
+      <div className="mb-4 border-b-2 border-black pb-3">
         <h1 className="text-xl font-extrabold">تقرير موردي المخزون</h1>
         <div className="flex gap-8 text-sm mt-1">
           {branchName && <span>الفرع: <strong>{branchName}</strong></span>}
@@ -25,26 +25,26 @@ export default function PrintableReport({ items, branchName, dateFrom, dateTo })
       </div>
 
       {groups.map(([supplierCode, rows], idx) => (
-        <div key={supplierCode} className={idx > 0 ? 'mt-3 pt-3 border-t border-dashed border-slate-400' : ''}>
+        <div key={supplierCode} className={idx > 0 ? 'mt-3 pt-3 border-t border-dashed border-black' : ''}>
           <div className="text-[13px] font-bold mb-1">
             {supplierCode} - {rows[0].supplier_name}
           </div>
           <table className="w-full border-collapse text-[11px]">
             <thead>
-              <tr className="bg-slate-800 text-white">
-                <th className="border border-slate-400 px-2 py-1">البيان</th>
-                <th className="border border-slate-400 px-2 py-1">موديل</th>
-                <th className="border border-slate-400 px-2 py-1">الرصيد</th>
-                <th className="border border-slate-400 px-2 py-1">السعر</th>
+              <tr className="font-bold">
+                <th className="border-2 border-black px-2 py-1">البيان</th>
+                <th className="border-2 border-black px-2 py-1">موديل</th>
+                <th className="border-2 border-black px-2 py-1">الرصيد</th>
+                <th className="border-2 border-black px-2 py-1">السعر</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
                 <tr key={r.id}>
-                  <td className="border border-slate-300 px-2 py-0.5">{r.category}</td>
-                  <td className="border border-slate-300 px-2 py-0.5 text-center">{r.model}</td>
-                  <td className="border border-slate-300 px-2 py-0.5 text-center">{r.balance}</td>
-                  <td className="border border-slate-300 px-2 py-0.5 text-center">{r.price}</td>
+                  <td className="border border-black px-2 py-0.5">{r.category}</td>
+                  <td className="border border-black px-2 py-0.5 text-center">{r.model}</td>
+                  <td className="border border-black px-2 py-0.5 text-center">{r.balance}</td>
+                  <td className="border border-black px-2 py-0.5 text-center">{r.price}</td>
                 </tr>
               ))}
             </tbody>
