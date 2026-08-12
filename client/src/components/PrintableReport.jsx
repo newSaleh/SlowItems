@@ -31,10 +31,13 @@ export default function PrintableReport({ items, title, branchName, dateFrom, da
       </div>
 
       {groups.map(([key, rows], idx) => (
+        // أول مجموعة تبدأ مباشرة أسفل رأس التقرير مباشرة: لا نطبّق break-inside:avoid عليها
+        // حتى لا تُدفع الصفحة الأولى بالكامل لتُترك فارغة إذا كانت هذه المجموعة كبيرة ولن تتّسع
+        // في صفحة واحدة أصلًا. بقية المجموعات تحافظ على المنع لتفادي انقسامها إن أمكن.
         <div
           key={key}
-          className={`break-inside-avoid ${idx > 0 ? 'mt-3 pt-3 border-t border-dashed border-black' : ''}`}
-          style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}
+          className={idx === 0 ? '' : `break-inside-avoid mt-3 pt-3 border-t border-dashed border-black`}
+          style={idx === 0 ? undefined : { breakInside: 'avoid', pageBreakInside: 'avoid' }}
         >
           <div className="text-[13px] font-bold mb-1">
             {groupBy === 'category' ? rows[0].category : `${rows[0].supplier_code} - ${rows[0].supplier_name}`}
