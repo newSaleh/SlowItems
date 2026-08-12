@@ -2,14 +2,19 @@ import * as XLSX from 'xlsx'
 import { sortItems } from './sort.js'
 import { DEFAULT_REPORT_TITLE } from './constants.js'
 
-const HEADER_MAP = {
-  'رمز المورد': 'supplier_code',
-  'اسم المورد': 'supplier_name',
-  'اسم مجموعة المخزون': 'category',
-  الموديل: 'model',
-  'الرصيد الحالي': 'balance',
-  'السعر الحالي': 'price',
+// كل حقل قد يظهر باسم مختلف حسب الفرع/الملف، لذا نقبل عدة أسماء بديلة لكل عمود
+const FIELD_ALIASES = {
+  supplier_code: ['رمز المورد'],
+  supplier_name: ['اسم المورد'],
+  category: ['اسم مجموعة المخزون'],
+  model: ['الموديل', 'رمز الموديل'],
+  balance: ['الرصيد الحالي'],
+  price: ['السعر الحالي', 'سعر البيع'],
 }
+
+const HEADER_MAP = Object.fromEntries(
+  Object.entries(FIELD_ALIASES).flatMap(([field, aliases]) => aliases.map((alias) => [alias, field]))
+)
 
 function normalizeHeader(h) {
   return String(h ?? '').trim()
@@ -39,13 +44,11 @@ export async function parseSuppliersFile(file) {
     if (field) colIndexByField[field] = idx
   })
 
-  const requiredFields = Object.values(HEADER_MAP)
+  const requiredFields = Object.keys(FIELD_ALIASES)
   const missing = requiredFields.filter((f) => !(f in colIndexByField))
   if (missing.length) {
-    const missingHeaders = Object.entries(HEADER_MAP)
-      .filter(([, field]) => missing.includes(field))
-      .map(([header]) => header)
-    throw new Error(`تعذر العثور على الأعمدة التالية في الملف: ${missingHeaders.join('، ')}`)
+    const missingLabel = missing.map((field) => FIELD_ALIASES[field].join(' / ')).join('، ')
+    throw new Error(`تعذر العثور على الأعمدة التالية في الملف: ${missingLabel}`)
   }
 
   const items = []
