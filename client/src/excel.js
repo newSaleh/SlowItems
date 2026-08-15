@@ -2,14 +2,14 @@ import * as XLSX from 'xlsx'
 import { sortItems } from './sort.js'
 import { DEFAULT_REPORT_TITLE } from './constants.js'
 
-// كل حقل قد يظهر باسم مختلف حسب الفرع/الملف، لذا نقبل عدة أسماء بديلة لكل عمود
+// كل حقل قد يظهر باسم مختلف حسب الفرع/الملف أو نظام التصدير، لذا نقبل عدة أسماء بديلة لكل عمود
 const FIELD_ALIASES = {
-  supplier_code: ['رمز المورد'],
-  supplier_name: ['اسم المورد'],
-  category: ['اسم مجموعة المخزون'],
-  model: ['الموديل', 'رمز الموديل'],
-  balance: ['الرصيد الحالي'],
-  price: ['السعر الحالي', 'سعر البيع'],
+  supplier_code: ['رمز المورد', 'SupplierCode'],
+  supplier_name: ['اسم المورد', 'SupplierName'],
+  category: ['اسم مجموعة المخزون', 'StockGroupName'],
+  model: ['الموديل', 'رمز الموديل', 'ModelCode'],
+  balance: ['الرصيد الحالي', 'CurrBalancePCS'],
+  price: ['السعر الحالي', 'سعر البيع', 'CurrPrice'],
 }
 
 const HEADER_MAP = Object.fromEntries(
