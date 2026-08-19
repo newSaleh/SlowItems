@@ -15,6 +15,8 @@ function groupItems(items, groupBy) {
 export default function PrintableReport({ items, title, branchName, dateFrom, dateTo, groupBy = 'supplier' }) {
   const sorted = sortItems(items, groupBy)
   const groups = groupItems(sorted, groupBy)
+  // بعض الملفات المستوردة تحتوي تاريخ آخر استلام بضاعة لكل صنف؛ نعرض هذا العمود فقط عند توفره
+  const showDateColumn = items.some((it) => it.last_received_date)
 
   return (
     <div className="hidden print:block p-10 bg-white text-black" dir="rtl">
@@ -56,6 +58,7 @@ export default function PrintableReport({ items, title, branchName, dateFrom, da
                 <th className="border-2 border-black px-2 py-1">موديل</th>
                 <th className="border-2 border-black px-2 py-1">الرصيد</th>
                 <th className="border-2 border-black px-2 py-1">السعر</th>
+                {showDateColumn && <th className="border-2 border-black px-2 py-1">التاريخ</th>}
               </tr>
             </thead>
             <tbody>
@@ -72,6 +75,7 @@ export default function PrintableReport({ items, title, branchName, dateFrom, da
                   <td className="border border-black px-2 py-0.5 text-center">{r.model}</td>
                   <td className="border border-black px-2 py-0.5 text-center">{r.balance}</td>
                   <td className="border border-black px-2 py-0.5 text-center">{r.price}</td>
+                  {showDateColumn && <td className="border border-black px-2 py-0.5 text-center">{r.last_received_date || '—'}</td>}
                 </tr>
               ))}
             </tbody>

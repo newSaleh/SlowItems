@@ -12,8 +12,15 @@ const FIELD_ALIASES = {
   price: ['السعر الحالي', 'سعر البيع', 'CurrPrice'],
 }
 
+// حقول اختيارية: تُقرأ إن وُجدت في الملف، ولا يُعتبر غيابها خطأ
+const OPTIONAL_FIELD_ALIASES = {
+  last_received_date: ['تاريخ آخر استلام بضاعة'],
+}
+
+const ALL_FIELD_ALIASES = { ...FIELD_ALIASES, ...OPTIONAL_FIELD_ALIASES }
+
 const HEADER_MAP = Object.fromEntries(
-  Object.entries(FIELD_ALIASES).flatMap(([field, aliases]) => aliases.map((alias) => [alias, field]))
+  Object.entries(ALL_FIELD_ALIASES).flatMap(([field, aliases]) => aliases.map((alias) => [alias, field]))
 )
 
 function normalizeHeader(h) {
@@ -24,6 +31,20 @@ function toNumber(v) {
   if (v === null || v === undefined || v === '') return 0
   const n = typeof v === 'number' ? v : parseFloat(String(v).replace(/,/g, ''))
   return Number.isFinite(n) ? n : 0
+}
+
+// يحوّل قيمة خلية تاريخ (رقم تسلسلي إكسل، أو Date، أو نص) إلى صيغة YYYY-MM-DD
+function toDateString(v) {
+  if (v === null || v === undefined || v === '') return ''
+  if (typeof v === 'number') {
+    const d = XLSX.SSF.parse_date_code(v)
+    if (!d) return ''
+    return `${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}`
+  }
+  if (v instanceof Date) {
+    return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, '0')}-${String(v.getDate()).padStart(2, '0')}`
+  }
+  return String(v).trim()
 }
 
 // يقرأ ملف إكسل الموردين ويحوّله إلى مصفوفة أصناف مطابقة لحقول التطبيق
@@ -65,6 +86,7 @@ export async function parseSuppliersFile(file) {
       model: normalizeHeader(cell('model')),
       balance: toNumber(cell('balance')),
       price: toNumber(cell('price')),
+      last_received_date: 'last_received_date' in colIndexByField ? toDateString(cell('last_received_date')) : '',
     })
   }
 
