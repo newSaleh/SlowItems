@@ -1,7 +1,15 @@
 const collator = new Intl.Collator('ar')
 
-// أقسام رئيسية بترتيب أولوية ثابت؛ أي بيان لا يحتوي أيًا من هذه الكلمات يذهب لقسم "أخرى" في النهاية
-const SECTION_KEYWORDS = ['رجالي', 'نسائي', 'ولادي', 'بناتي', 'اطفال', 'مفروشات']
+// أقسام رئيسية بترتيب أولوية ثابت؛ أي بيان لا يحتوي أيًا من هذه الكلمات يذهب لقسم "أخرى" في النهاية.
+// كل قسم قد يُكتشف بأكثر من كلمة (مثل "عاملة" التي تصنَّف مع النسائي)
+const SECTIONS = [
+  ['رجالي'],
+  ['نسائي', 'عاملة'],
+  ['ولادي'],
+  ['بناتي'],
+  ['اطفال'],
+  ['مفروشات'],
+]
 
 function normalizeHamza(s) {
   return s.replace(/[أإآ]/g, 'ا')
@@ -9,8 +17,8 @@ function normalizeHamza(s) {
 
 function sectionRank(category) {
   const normalized = normalizeHamza(category)
-  const idx = SECTION_KEYWORDS.findIndex((kw) => normalized.includes(kw))
-  return idx === -1 ? SECTION_KEYWORDS.length : idx
+  const idx = SECTIONS.findIndex((keywords) => keywords.some((kw) => normalized.includes(kw)))
+  return idx === -1 ? SECTIONS.length : idx
 }
 
 // حسب المورد: المورد تصاعديًا، ثم داخل كل مورد البيان (الصنف) تنازليًا، ثم الرصيد تصاعديًا
