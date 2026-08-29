@@ -1,5 +1,18 @@
 const collator = new Intl.Collator('ar')
 
+// أقسام رئيسية بترتيب أولوية ثابت؛ أي بيان لا يحتوي أيًا من هذه الكلمات يذهب لقسم "أخرى" في النهاية
+const SECTION_KEYWORDS = ['رجالي', 'نسائي', 'ولادي', 'بناتي', 'اطفال', 'مفروشات']
+
+function normalizeHamza(s) {
+  return s.replace(/[أإآ]/g, 'ا')
+}
+
+function sectionRank(category) {
+  const normalized = normalizeHamza(category)
+  const idx = SECTION_KEYWORDS.findIndex((kw) => normalized.includes(kw))
+  return idx === -1 ? SECTION_KEYWORDS.length : idx
+}
+
 // حسب المورد: المورد تصاعديًا، ثم داخل كل مورد البيان (الصنف) تنازليًا، ثم الرصيد تصاعديًا
 export function sortBySupplier(items) {
   return [...items].sort((a, b) => {
@@ -11,9 +24,12 @@ export function sortBySupplier(items) {
   })
 }
 
-// حسب البيان: البيان تصاعديًا، ثم داخل كل بيان رقم المورد تصاعديًا، ثم الرصيد تنازليًا
+// حسب البيان: القسم الرئيسي أولًا (رجالي، نسائي، ولادي، بناتي، أطفال، مفروشات، ثم أخرى)،
+// ثم داخل كل قسم البيان أبجديًا، ثم رقم المورد تصاعديًا، ثم الرصيد تنازليًا
 export function sortByCategory(items) {
   return [...items].sort((a, b) => {
+    const bySection = sectionRank(a.category) - sectionRank(b.category)
+    if (bySection !== 0) return bySection
     const byCategory = collator.compare(a.category, b.category)
     if (byCategory !== 0) return byCategory
     const bySupplier = collator.compare(a.supplier_code, b.supplier_code)
