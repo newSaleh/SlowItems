@@ -21,13 +21,16 @@ function sectionRank(category) {
   return idx === -1 ? SECTIONS.length : idx
 }
 
-// حسب المورد: المورد تصاعديًا، ثم داخل كل مورد البيان (الصنف) تنازليًا، ثم الرصيد تصاعديًا
+// حسب المورد: المورد تصاعديًا، ثم داخل كل مورد نفس ترتيب الأقسام المستخدم في وضع "حسب البيان"
+// (رجالي، نسائي، ولادي، بناتي، أطفال، مفروشات، ثم أخرى) وأبجديًا داخل كل قسم، ثم الرصيد تصاعديًا
 export function sortBySupplier(items) {
   return [...items].sort((a, b) => {
     const bySupplier = collator.compare(a.supplier_code, b.supplier_code)
     if (bySupplier !== 0) return bySupplier
+    const bySection = sectionRank(a.category) - sectionRank(b.category)
+    if (bySection !== 0) return bySection
     const byCategory = collator.compare(a.category, b.category)
-    if (byCategory !== 0) return -byCategory // تنازلي
+    if (byCategory !== 0) return byCategory
     return a.balance - b.balance
   })
 }
