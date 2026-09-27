@@ -1,6 +1,6 @@
 import { loadItems, saveItems, loadMeta, saveMeta, nextId } from './storage.js'
 import { sortItems } from './sort.js'
-import { parseSuppliersFile, downloadSuppliersExport } from './excel.js'
+import { parseSuppliersFile, parsePastedText, downloadSuppliersExport } from './excel.js'
 
 function nowISO() {
   return new Date().toISOString()
@@ -88,6 +88,20 @@ export const ItemsAPI = {
     const meta = { ...loadMeta(), branchName: String(branchName ?? '').trim() }
     saveMeta(meta)
     return meta
+  },
+
+  // يستبدل بيانات الفرع الحالي بالكامل بمحتوى نص ملصوق (منسوخ من إكسل)
+  async importFromText(text) {
+    let parsed
+    try {
+      parsed = parsePastedText(text)
+    } catch (err) {
+      throw apiError(err.message || 'تعذر قراءة البيانات الملصقة')
+    }
+    const items = parsed.items.map((it) => ({ id: nextId(), ...it, created_at: nowISO(), updated_at: nowISO() }))
+    saveItems(items)
+    saveMeta({ ...loadMeta(), importedAt: nowISO(), sourceFile: 'بيانات ملصقة' })
+    return { imported: items.length, duplicatesRemoved: parsed.duplicatesRemoved }
   },
 
   // يولّد ملف إكسل مقسّم حسب المورد أو البيان ويبدأ تنزيله مباشرة من المتصفح

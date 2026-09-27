@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ItemsAPI } from '../api.js'
 import ItemFormModal from '../components/ItemFormModal.jsx'
+import PasteDataModal from '../components/PasteDataModal.jsx'
 import PrintModal from '../components/PrintModal.jsx'
 import PrintableReport from '../components/PrintableReport.jsx'
 
@@ -22,6 +23,7 @@ export default function SuppliersInventoryPage() {
   const [printState, setPrintState] = useState(null)
 
   const [importing, setImporting] = useState(false)
+  const [pasteModalOpen, setPasteModalOpen] = useState(false)
   const [toast, setToast] = useState('')
   const fileInputRef = useRef(null)
 
@@ -88,6 +90,16 @@ export default function SuppliersInventoryPage() {
     } finally {
       setImporting(false)
     }
+  }
+
+  const handlePasteSubmit = async (text) => {
+    const res = await ItemsAPI.importFromText(text)
+    await load()
+    showToast(
+      res.duplicatesRemoved > 0
+        ? `تم استيراد ${fmtNumber(res.imported)} صنف (حُذف ${fmtNumber(res.duplicatesRemoved)} سطر مكرر)`
+        : `تم استيراد ${fmtNumber(res.imported)} صنف بنجاح`
+    )
   }
 
   const openAddForm = () => {
@@ -160,6 +172,9 @@ export default function SuppliersInventoryPage() {
           <input type="file" accept=".xlsx,.xls" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
           <button onClick={handleImportClick} disabled={importing} className="btn-secondary">
             {importing ? 'جارِ الاستيراد...' : '📥 استيراد إكسل'}
+          </button>
+          <button onClick={() => setPasteModalOpen(true)} className="btn-secondary">
+            📋 لصق البيانات
           </button>
           <button onClick={() => setPrintModal({ open: true, mode: 'export' })} className="btn-secondary">
             📤 تصدير إكسل
@@ -267,6 +282,8 @@ export default function SuppliersInventoryPage() {
       </div>
 
       <ItemFormModal open={formOpen} initial={editingItem} onClose={() => setFormOpen(false)} onSubmit={handleFormSubmit} />
+
+      <PasteDataModal open={pasteModalOpen} onClose={() => setPasteModalOpen(false)} onSubmit={handlePasteSubmit} />
 
       <PrintModal
         open={printModal.open}

@@ -47,15 +47,10 @@ function toDateString(v) {
   return String(v).trim()
 }
 
-// يقرأ ملف إكسل الموردين ويحوّله إلى مصفوفة أصناف مطابقة لحقول التطبيق
-export async function parseSuppliersFile(file) {
-  const buffer = await file.arrayBuffer()
-  const workbook = XLSX.read(buffer, { type: 'array' })
-  const sheetName = workbook.SheetNames[0]
-  if (!sheetName) throw new Error('الملف لا يحتوي على أي ورقة عمل')
-  const sheet = workbook.Sheets[sheetName]
-  const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: '' })
-  if (!rows.length) throw new Error('الملف فارغ')
+// يحوّل مصفوفة صفوف (الصف الأول عناوين الأعمدة) إلى أصناف مطابقة لحقول التطبيق،
+// يُستخدم لكل من قراءة ملف إكسل ولصق بيانات منسوخة من إكسل
+function parseRowsToItems(rows) {
+  if (!rows.length) throw new Error('لا توجد بيانات')
 
   const headerRow = rows[0]
   const colIndexByField = {}
@@ -69,7 +64,7 @@ export async function parseSuppliersFile(file) {
   const missing = requiredFields.filter((f) => !(f in colIndexByField))
   if (missing.length) {
     const missingLabel = missing.map((field) => FIELD_ALIASES[field].join(' / ')).join('، ')
-    throw new Error(`تعذر العثور على الأعمدة التالية في الملف: ${missingLabel}`)
+    throw new Error(`تعذر العثور على الأعمدة التالية: ${missingLabel}`)
   }
 
   const items = []
@@ -90,11 +85,31 @@ export async function parseSuppliersFile(file) {
     })
   }
 
-  if (!items.length) throw new Error('لم يتم العثور على أي بيانات صالحة في الملف')
+  if (!items.length) throw new Error('لم يتم العثور على أي بيانات صالحة')
 
   const { items: deduped, duplicatesRemoved } = dedupeItems(items)
-  if (!deduped.length) throw new Error('لم يتم العثور على أي بيانات صالحة في الملف')
+  if (!deduped.length) throw new Error('لم يتم العثور على أي بيانات صالحة')
   return { items: deduped, duplicatesRemoved }
+}
+
+// يقرأ ملف إكسل الموردين ويحوّله إلى مصفوفة أصناف مطابقة لحقول التطبيق
+export async function parseSuppliersFile(file) {
+  const buffer = await file.arrayBuffer()
+  const workbook = XLSX.read(buffer, { type: 'array' })
+  const sheetName = workbook.SheetNames[0]
+  if (!sheetName) throw new Error('الملف لا يحتوي على أي ورقة عمل')
+  const sheet = workbook.Sheets[sheetName]
+  const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: '' })
+  if (!rows.length) throw new Error('الملف فارغ')
+  return parseRowsToItems(rows)
+}
+
+// يحوّل نصًا ملصوقًا (منسوخًا من إكسل، مفصول بعلامات Tab) إلى نفس صيغة parseSuppliersFile
+export function parsePastedText(text) {
+  const lines = text.replace(/\r\n/g, '\n').split('\n').filter((l) => l.trim() !== '')
+  if (!lines.length) throw new Error('لم يتم لصق أي بيانات')
+  const rows = lines.map((line) => line.split('\t').map((cell) => cell.trim()))
+  return parseRowsToItems(rows)
 }
 
 // يحذف الأسطر المكررة تمامًا (نفس المورد والبيان والموديل والرصيد والسعر)، ويبقي على أول ظهور فقط
