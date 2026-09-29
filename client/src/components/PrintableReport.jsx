@@ -75,7 +75,13 @@ export default function PrintableReport({ items, title, branchName, dateFrom, da
                   <td className="border border-black px-2 py-0.5 text-center">{r.model}</td>
                   <td className="border border-black px-2 py-0.5 text-center">{r.balance}</td>
                   <td className="border border-black px-2 py-0.5 text-center">{r.price}</td>
-                  {showDateColumn && <td className="border border-black px-2 py-0.5 text-center">{r.last_received_date || '—'}</td>}
+                  {showDateColumn && (
+                    <td className="border border-black px-2 py-0.5 text-center">
+                      <bdi dir="ltr" style={{ unicodeBidi: 'isolate' }}>
+                        {r.last_received_date || '—'}
+                      </bdi>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
