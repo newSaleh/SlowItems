@@ -38,3 +38,16 @@ export function nextId() {
   writeJSON(SEQ_KEY, seq)
   return seq
 }
+
+// يولّد عدة أرقام تسلسلية دفعة واحدة بقراءة وكتابة واحدة فقط في localStorage،
+// بدل قراءة وكتابة منفصلة لكل عنصر (مهم عند استيراد آلاف الصفوف دفعة واحدة)
+export function nextIds(count) {
+  let seq = readJSON(SEQ_KEY, 0)
+  const ids = new Array(count)
+  for (let i = 0; i < count; i++) {
+    seq++
+    ids[i] = seq
+  }
+  writeJSON(SEQ_KEY, seq)
+  return ids
+}

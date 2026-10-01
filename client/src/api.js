@@ -1,4 +1,4 @@
-import { loadItems, saveItems, loadMeta, saveMeta, nextId } from './storage.js'
+import { loadItems, saveItems, loadMeta, saveMeta, nextId, nextIds } from './storage.js'
 import { sortItems } from './sort.js'
 import { parseSuppliersFile, parsePastedText, downloadSuppliersExport } from './excel.js'
 
@@ -78,7 +78,8 @@ export const ItemsAPI = {
     } catch (err) {
       throw apiError(err.message || 'تعذر قراءة ملف الإكسل')
     }
-    const items = parsed.items.map((it) => ({ id: nextId(), ...it, created_at: nowISO(), updated_at: nowISO() }))
+    const ids = nextIds(parsed.items.length)
+    const items = parsed.items.map((it, i) => ({ id: ids[i], ...it, created_at: nowISO(), updated_at: nowISO() }))
     saveItems(items)
     saveMeta({ ...loadMeta(), importedAt: nowISO(), sourceFile: file.name })
     return { imported: items.length, duplicatesRemoved: parsed.duplicatesRemoved }
@@ -92,13 +93,18 @@ export const ItemsAPI = {
 
   // يستبدل بيانات الفرع الحالي بالكامل بمحتوى نص ملصوق (منسوخ من إكسل)
   async importFromText(text) {
+    // نسمح للمتصفح برسم مؤشر "جارِ الاستيراد..." قبل بدء المعالجة الثقيلة التالية،
+    // لأن التحليل نفسه متزامن بالكامل ولن يترك فرصة لإعادة الرسم أثناء تنفيذه
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
     let parsed
     try {
       parsed = parsePastedText(text)
     } catch (err) {
       throw apiError(err.message || 'تعذر قراءة البيانات الملصقة')
     }
-    const items = parsed.items.map((it) => ({ id: nextId(), ...it, created_at: nowISO(), updated_at: nowISO() }))
+    const ids = nextIds(parsed.items.length)
+    const items = parsed.items.map((it, i) => ({ id: ids[i], ...it, created_at: nowISO(), updated_at: nowISO() }))
     saveItems(items)
     saveMeta({ ...loadMeta(), importedAt: nowISO(), sourceFile: 'بيانات ملصقة' })
     return { imported: items.length, duplicatesRemoved: parsed.duplicatesRemoved }
